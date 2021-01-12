@@ -1,7 +1,7 @@
 package recaptcha
 
 import (
-	"bytes"
+	"net/url"
 	"encoding/json"
 	"io/ioutil"
 )
@@ -27,24 +27,12 @@ type (
 const RecaptchaEndpoint = "https://www.google.com/recaptcha/api/siteverify"
 
 func (r *recaptcha) Validate(token, ip string) (bool, error) {
-	payload := &ReqPayload{
-		Secret:   r.Config.Secret,
-		Response: token,
-		//		RemoteIP: ip,
-	}
-
 	form := url.Values{
-		"secret": r.Config.Secret,
-		"response": token,
+		"secret": {r.Config.Secret},
+		"response": {token},
 	}
 
-	jsonpayload, err := json.Marshal(payload)
-	if err != nil {
-		r.Logger.Error(err)
-		return false, err
-	}
-
-	resp, err := r.Client.PostForm(RecaptchaEndpoint, from)
+	resp, err := r.Client.PostForm(RecaptchaEndpoint, form)
 	if err != nil {
 		r.Logger.Error(err)
 		return false, err
