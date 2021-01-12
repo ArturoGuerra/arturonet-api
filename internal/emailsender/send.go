@@ -34,6 +34,7 @@ func (es *emailSender) Send(payload *Email) error {
 	}
 
 	if _, err := es.SES.SendEmail(sesEmailInput); err != nil {
+		es.Logger.Error(err)
 		return err
 	}
 

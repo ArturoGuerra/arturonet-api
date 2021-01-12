@@ -35,16 +35,19 @@ func (r *recaptcha) Validate(token, ip string) (bool, error) {
 
 	jsonpayload, err := json.Marshal(payload)
 	if err != nil {
+		r.Logger.Error(err)
 		return false, err
 	}
 
 	resp, err := r.Client.Post(RecaptchaEndpoint, "application/json", bytes.NewBuffer(jsonpayload))
 	if err != nil {
+		r.Logger.Error(err)
 		return false, err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		r.Logger.Error(err)
 		return false, err
 	}
 
@@ -52,6 +55,7 @@ func (r *recaptcha) Validate(token, ip string) (bool, error) {
 
 	rpayload := RespPayload{}
 	if err = json.Unmarshal(body, &rpayload); err != nil {
+		r.Logger.Error(err)
 		return false, err
 	}
 
