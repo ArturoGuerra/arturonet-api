@@ -20,7 +20,7 @@ func (es *emailSender) Send(payload *Email) error {
 			ToAddresses: []*string{aws.String(es.Config.ReplyEmail)},
 		},
 		Source:           aws.String(es.Config.SenderEmail),
-		ReplyToAddresses: []*string{aws.String(es.Config.ReplyEmail)},
+		ReplyToAddresses: []*string{aws.String(payload.Email)},
 		Message: &ses.Message{
 			Subject: &ses.Content{
 				Data: aws.String(fmt.Sprintf("Email from ArturoNet Name: %s Email: %s", payload.Name, payload.Email)),
