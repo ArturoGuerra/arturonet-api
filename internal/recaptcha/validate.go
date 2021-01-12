@@ -11,7 +11,7 @@ type (
 	ReqPayload struct {
 		Secret   string `json:"secret"`
 		Response string `josn:"response"`
-		RemoteIP string `json:"remoteip"`
+		//RemoteIP string `json:"remoteip"`
 	}
 
 	// RespPayload recaptcha response
@@ -23,13 +23,14 @@ type (
 	}
 )
 
-const RECAPTCHA_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify"
+// RecaptchaEndpoint google's v3 recaptcha endpoint
+const RecaptchaEndpoint = "https://www.google.com/recaptcha/api/siteverify"
 
 func (r *recaptcha) Validate(token, ip string) (bool, error) {
 	payload := &ReqPayload{
 		Secret:   r.Config.Secret,
 		Response: token,
-		RemoteIP: ip,
+		//		RemoteIP: ip,
 	}
 
 	jsonpayload, err := json.Marshal(payload)
@@ -37,7 +38,7 @@ func (r *recaptcha) Validate(token, ip string) (bool, error) {
 		return false, err
 	}
 
-	resp, err := r.Client.Post(RECAPTCHA_ENDPOINT, "application/json", bytes.NewBuffer(jsonpayload))
+	resp, err := r.Client.Post(RecaptchaEndpoint, "application/json", bytes.NewBuffer(jsonpayload))
 	if err != nil {
 		return false, err
 	}
