@@ -17,7 +17,7 @@ type Email struct {
 func (es *emailSender) Send(payload *Email) error {
 	sesEmailInput := &ses.SendEmailInput{
 		Destination: &ses.Destination{
-			ToAddresses: []*string{aws.String(es.Config.SenderEmail)},
+			ToAddresses: []*string{aws.String(es.Config.ReplyEmail)},
 		},
 		Source:           aws.String(es.Config.SenderEmail),
 		ReplyToAddresses: []*string{aws.String(es.Config.ReplyEmail)},
