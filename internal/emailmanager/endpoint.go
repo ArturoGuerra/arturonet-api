@@ -24,14 +24,14 @@ func (em *emailManager) send(c echo.Context) error {
 		return err
 	}
 
-	_, err := em.Recaptcha.Validate(payload.Recaptcha, c.RealIP())
+	valid, err := em.Recaptcha.Validate(payload.Recaptcha, c.RealIP())
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	//if !valid {
-	//	return c.String(http.StatusForbidden, "Invalid Recaptcha Token")
-	//}
+	if !valid {
+		return c.String(http.StatusForbidden, "Invalid Recaptcha Token")
+	}
 
 	email := &emailsender.Email{
 		Name:    payload.Name,

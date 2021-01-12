@@ -33,13 +33,18 @@ func (r *recaptcha) Validate(token, ip string) (bool, error) {
 		//		RemoteIP: ip,
 	}
 
+	form := url.Values{
+		"secret": r.Config.Secret,
+		"response": token,
+	}
+
 	jsonpayload, err := json.Marshal(payload)
 	if err != nil {
 		r.Logger.Error(err)
 		return false, err
 	}
 
-	resp, err := r.Client.Post(RecaptchaEndpoint, "application/json", bytes.NewBuffer(jsonpayload))
+	resp, err := r.Client.PostForm(RecaptchaEndpoint, from)
 	if err != nil {
 		r.Logger.Error(err)
 		return false, err
