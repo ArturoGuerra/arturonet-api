@@ -8,10 +8,14 @@ import (
 	"github.com/arturoguerra/arturonet-api/internal/recaptcha"
 	"github.com/arturoguerra/arturonet-api/internal/router"
 	logging "github.com/arturoguerra/go-logging"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
+	// .env for development purposes
+	godotenv.Load()
+
 	logger := logging.New()
 
 	r, rconfig, err := router.NewDefault(logger)
