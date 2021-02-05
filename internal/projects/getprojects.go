@@ -38,10 +38,12 @@ type (
 		Description string     `json:"description"`
 		Fork        bool       `json:"fork"`
 		URL         string     `json:"url"`
+		HTMLURL     string     `json:"html_url"`
 		Language    string     `json:"language"`
 		ForksCount  int        `json:"forks_count"`
 		Archived    bool       `json:"archived"`
-		Watchers    int        `json:"watchers"`
+		Watchers    int        `json:"watchers_count"`
+		Stars       int        `json:"stargazers_count"`
 		CreatedAt   string     `json:"created_at"`
 		UpdatedAt   string     `json:"updated_at"`
 	}
