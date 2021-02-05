@@ -74,7 +74,7 @@ func (p *projects) getProjects() echo.HandlerFunc {
 		// Repos that will be turned in json for return payload
 		repos := make([]*Repo, 0)
 
-		userurl := fmt.Sprintf("%s/user/%s/repos", githubAPIBase, githubUser)
+		userurl := fmt.Sprintf("%s/users/%s/repos", githubAPIBase, githubUser)
 
 		urls := []string{
 			userurl,
