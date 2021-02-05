@@ -8,11 +8,6 @@ import (
 )
 
 type (
-	// EmailManager exports all the email functions
-	EmailManager interface {
-		Register(group *echo.Group)
-	}
-
 	emailManager struct {
 		Config    *Config
 		Recaptcha recaptcha.Recaptcha
@@ -22,17 +17,17 @@ type (
 )
 
 // NewDefault returns an instance of emailmanager with an env config
-func NewDefault(logger *logrus.Logger, rcptch recaptcha.Recaptcha, es emailsender.EmailSender) (EmailManager, error) {
+func NewDefault(logger *logrus.Logger, rcptch recaptcha.Recaptcha, es emailsender.EmailSender, g *echo.Group) error {
 	cfg, err := loadConfig()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return New(logger, rcptch, es, cfg)
+	return New(logger, rcptch, es, cfg, g)
 }
 
 // New returns a new instance of emailmanager
-func New(logger *logrus.Logger, rcptch recaptcha.Recaptcha, es emailsender.EmailSender, config *Config) (EmailManager, error) {
+func New(logger *logrus.Logger, rcptch recaptcha.Recaptcha, es emailsender.EmailSender, config *Config, g *echo.Group) error {
 	em := &emailManager{
 		Config:    config,
 		Recaptcha: rcptch,
@@ -40,5 +35,7 @@ func New(logger *logrus.Logger, rcptch recaptcha.Recaptcha, es emailsender.Email
 		Sender:    es,
 	}
 
-	return em, nil
+	g.POST("", em.getEmailHandler())
+
+	return nil
 }

@@ -17,31 +17,33 @@ type (
 	}
 )
 
-func (em *emailManager) send(c echo.Context) error {
-	payload := new(EmailPayload)
-	if err := c.Bind(payload); err != nil {
-		em.Logger.Error(err)
-		return err
-	}
+func (em *emailManager) getEmailHandler() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		payload := new(EmailPayload)
+		if err := c.Bind(payload); err != nil {
+			em.Logger.Error(err)
+			return err
+		}
 
-	valid, err := em.Recaptcha.Validate(payload.Recaptcha, c.RealIP())
-	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
+		valid, err := em.Recaptcha.Validate(payload.Recaptcha, c.RealIP())
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
 
-	if !valid {
-		return c.String(http.StatusForbidden, "Invalid Recaptcha Token")
-	}
+		if !valid {
+			return c.String(http.StatusForbidden, "Invalid Recaptcha Token")
+		}
 
-	email := &emailsender.Email{
-		Name:    payload.Name,
-		Email:   payload.Email,
-		Message: payload.Message,
-	}
+		email := &emailsender.Email{
+			Name:    payload.Name,
+			Email:   payload.Email,
+			Message: payload.Message,
+		}
 
-	if err = em.Sender.Send(email); err != nil {
-		return c.String(http.StatusForbidden, err.Error())
-	}
+		if err = em.Sender.Send(email); err != nil {
+			return c.String(http.StatusForbidden, err.Error())
+		}
 
-	return c.String(http.StatusOK, "200")
+		return c.String(http.StatusOK, "200")
+	}
 }

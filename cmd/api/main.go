@@ -5,6 +5,7 @@ import (
 
 	"github.com/arturoguerra/arturonet-api/internal/emailmanager"
 	"github.com/arturoguerra/arturonet-api/internal/emailsender"
+	"github.com/arturoguerra/arturonet-api/internal/projects"
 	"github.com/arturoguerra/arturonet-api/internal/recaptcha"
 	"github.com/arturoguerra/arturonet-api/internal/router"
 	logging "github.com/arturoguerra/go-logging"
@@ -35,13 +36,13 @@ func main() {
 
 	apiGroup := r.Group("/api", middleware.Logger())
 
-	emailGroup := apiGroup.Group("/email")
-	emailManager, err := emailmanager.NewDefault(logger, rcptcha, es)
-	if err != nil {
+	if err := emailmanager.NewDefault(logger, rcptcha, es, apiGroup.Group("/email")); err != nil {
 		logger.Fatal(err)
 	}
 
-	emailManager.Register(emailGroup)
+	if err := projects.New(logger, apiGroup.Group("/projects")); err != nil {
+		logger.Fatal(err)
+	}
 
 	logger.Infof("Running on %s:%s", rconfig.Host, rconfig.Port)
 	r.Logger.Fatal(r.Start(fmt.Sprintf("%s:%s", rconfig.Host, rconfig.Port)))
