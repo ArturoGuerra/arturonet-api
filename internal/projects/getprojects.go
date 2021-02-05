@@ -1,7 +1,10 @@
 package projects
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
@@ -45,7 +48,23 @@ type (
 )
 
 func (p *projects) getRepos(url string) ([]*Repo, error) {
-	return nil, nil
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	data := make([]*Repo, 0)
+	if err := json.Unmarshal(body, &data); err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 func (p *projects) getProjects() echo.HandlerFunc {
@@ -68,13 +87,11 @@ func (p *projects) getProjects() echo.HandlerFunc {
 			newrepos, err := p.getRepos(url)
 			if err == nil {
 				repos = append(repos, newrepos...)
+			} else {
+				p.Logger.Error(err)
 			}
 		}
 
-		results := map[string]interface{}{
-			"repos": repos,
-		}
-
-		return c.JSON(200, results)
+		return c.JSON(200, repos)
 	}
 }
